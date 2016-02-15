@@ -20,6 +20,7 @@ public class SpreadSheetHandlerUtil {
 	
 	/* JSON PROPERTIES */
 	public static final String USERS = "users";
+	public static final String USER_ID = "userId";
     public static final String TYPE = "type";
     public static final String USERNAME = "userName";
     public static final String USER_IMAGEPATH = "userImagePath";
@@ -51,6 +52,7 @@ public class SpreadSheetHandlerUtil {
             LOG.debug(user);
             user.put(USERNAME, userData.getUserName());
             user.put(USER_IMAGEPATH, userData.getUserImagePath());
+            user.put(USER_ID, userData.getUserId());
             user.put(SESSIONID, key);
             users.put(user);
         }

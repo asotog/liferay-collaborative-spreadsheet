@@ -28,12 +28,14 @@ public class UserData {
 
     private String userName;
     private String userImagePath;
-
-    public UserData(String userName, String userImagePath) {
+    private String userId;
+    
+    public UserData(String userName, String userImagePath, String userId) {
 
         super();
         this.userName = userName;
         this.userImagePath = userImagePath;
+        this.userId = userId;
     }
 
     public String getUserName() {
@@ -55,4 +57,13 @@ public class UserData {
 
         this.userImagePath = userImagePath;
     }
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+    
 }

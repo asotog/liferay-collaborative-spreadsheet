@@ -29,7 +29,7 @@
 
 .realtime-spreadsheet table {
     width: 100%;
-	.live-highlight {
+	.cell-highlight {
 	    border: 1px;
 	    border-style: solid;
 	    border-color: #3FC51B; /* TODO: remove this just for testing css */

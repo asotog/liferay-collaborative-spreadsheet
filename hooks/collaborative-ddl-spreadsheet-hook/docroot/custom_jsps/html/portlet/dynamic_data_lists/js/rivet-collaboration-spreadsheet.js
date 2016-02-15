@@ -15,29 +15,6 @@ AUI.add(
         var TEMPLATES = {
             usersOnline: getTemplate('#spreadsheet-online-users')
         };
-        
-        /**
-        * Generates users colors
-        *
-        *
-        */
-        var generateColors = function() {
-            var N_COLORS = 100;
-            var colors = [];
-            for (var i = 0; i < N_COLORS; i++) {
-                var color = [];
-                for(var j = 0; j < 3; j++) {
-                    color.push(Math.floor(Math.random() * 255));
-                }
-                colors.push('rgb(' + color.join(',') + ')');
-            };
-            return colors;
-        };
-        var pickColor = function(colors) {
-            var i = Math.floor(Math.random() * colors.length);
-            return colors.splice(i, 1)[0];
-        };
-        var COLORS = generateColors();
 
         var RivetCollaborationSpreadSheet = A.Component.create(
             {
@@ -139,9 +116,14 @@ AUI.add(
                     *
                     */
                     preProcessUsers: function(users) {
+                        var instance = this;
                         var onlineUsersTmp = [];
                         A.Array.each(users, function(item, index) {
-                            item.color = pickColor(COLORS);
+                            item.color = A.UsersColors.pickColor(item.userId);
+                            // update highlight color for current user
+                            if (item.userId === Liferay.ThemeDisplay.getUserId()) {
+                                instance.set('highlightColor', item.color);
+                            };
                             onlineUsersTmp.push(item);
                         });
                         this.set('onlineUsers', onlineUsersTmp);
@@ -158,5 +140,5 @@ AUI.add(
         },
     	'',
     	{
-    		requires: ['rivet-spreadsheet-datatable', 'atmosphere', 'aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'handlebars']
+    		requires: ['rivet-spreadsheet-datatable', 'rivet-users-color', 'atmosphere', 'aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'handlebars']
     	})

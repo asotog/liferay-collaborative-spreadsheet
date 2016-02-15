@@ -80,6 +80,9 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 		   'rivet-collaboration-spreadsheet': {
 			   fullpath: '/html/portlet/dynamic_data_lists/js/rivet-collaboration-spreadsheet.js'
 		   },
+		   'rivet-users-color': {
+			  fullpath: '/html/portlet/dynamic_data_lists/js/rivet-users-color.js'
+		   },
 		   'atmosphere': {
 			  fullpath: '/html/portlet/dynamic_data_lists/js/third-party/atmosphere.js'
 		   }

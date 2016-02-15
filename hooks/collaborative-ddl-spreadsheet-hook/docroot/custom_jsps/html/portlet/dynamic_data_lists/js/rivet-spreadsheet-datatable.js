@@ -111,9 +111,13 @@ AUI.add(
         
         Liferay.RivetInlineCellEditor = InlineCellEditor;
         
+        var HIGHLIGHTED_CELL = '.cell-highlight.current-user.table-cell';
+
         var RivetSpreadSheet = A.Component.create({
             ATTRS: {
-                
+                highlightColor: {
+                    value: '#3FC51B'
+                }
             },
             
             CSS_PREFIX: 'table',
@@ -129,6 +133,8 @@ AUI.add(
                 
                 bindSpreadSheet: function() {
                     var instance = this;
+                    instance.after('highlightColorChange', A.bind(instance._highlightColorChanged, instance));
+                    
                     instance.delegate(instance.get('editEvent'), function(e) {
                         var activeCell = instance.get('activeCell'),
                         alignNode = event.alignNode || activeCell,
@@ -148,9 +154,23 @@ AUI.add(
                     
                     // highlight
                     instance.delegate('click', function(e) {
-                        instance.get('boundingBox').all('.' + instance.CLASS_NAMES_CELL_EDITOR_SUPPORT.cell).removeClass('live-highlight');
-                        e.currentTarget.addClass('live-highlight').addClass('current-user');
+                        var cellList = instance.get('boundingBox').all(HIGHLIGHTED_CELL);
+                        cellList.setStyle('border-color', '');
+                        cellList.removeClass('cell-highlight').removeClass('current-user');
+                        var cell = e.currentTarget;
+                        instance._updateHighlightCellColor(cell);
                     }, '.' + instance.CLASS_NAMES_CELL_EDITOR_SUPPORT.cell, this);
+                },
+                
+                _highlightColorChanged: function() {
+                    if (this.get('boundingBox').one(HIGHLIGHTED_CELL)) {
+                        this._updateHighlightCellColor(this.get('boundingBox').one(HIGHLIGHTED_CELL));
+                    }
+                },
+
+                _updateHighlightCellColor: function(cell) {
+                    cell.addClass('cell-highlight').addClass('current-user');
+                    cell.setStyle('border-color', this.get('highlightColor'));
                 }
             }
         });

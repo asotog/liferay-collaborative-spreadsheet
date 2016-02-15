@@ -79,7 +79,8 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 
         String userName = StringPool.BLANK;
         String userImagePath = StringPool.BLANK;
-
+        String userId = StringPool.BLANK;
+        
         // user joined
         String sessionId = resource.session().getId();
         if (loggedUserMap.get(sessionId) == null) {
@@ -102,13 +103,13 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
                 }
 
                 userImagePath = UserConstants.getPortraitURL(baseImagePath, user.isMale(), user.getPortraitId());
-
+                userId = String.valueOf(user.getUserId());
                 LOG.debug(String.format("User full name: %s, User image path: %s", userName, userImagePath));
             } catch (Exception e) {
                 LOG.error(e.getMessage());
             }
 
-            loggedUserMap.put(resource.session().getId(), new UserData(userName, userImagePath));
+            loggedUserMap.put(resource.session().getId(), new UserData(userName, userImagePath, userId));
 
             /* listens to disconnection event */
             resource.addEventListener(new SpreadSheetResourceEventListener(loggedUserMap, sessionId));
