@@ -33,24 +33,21 @@ if (DDLRecordSetPermission.contains(permissionChecker, recordSet.getRecordSetId(
 
 DDMStructure ddmStructure = recordSet.getDDMStructure();
 %>
-
+<script id="spreadsheet-online-users" type="text/x-handlebars-template">
+	<ul class="unstyled">
+		{{#each users}}
+		<li>
+			<a href="" class="user-portrait">
+				<img style="border-color: {{color}} !important;" src="{{userImagePath}}" alt="">
+				<span style="background-color: {{color}};" class="user-info">{{userName}}</span>                                                    
+			</a>
+		</li>
+		{{/each}}
+	</ul>
+</script>
 <div class="lfr-spreadsheet-container">
 	<div id="<portlet:namespace />spreadsheet" class="realtime-spreadsheet">
 		<div class="collaboration-users">
-			<ul class="unstyled">
-				<li>
-					<a href="" class="user-portrait current-user">
-						<img src="//style.anu.edu.au/_anu/4/images/placeholders/person.png" alt="">
-						<span class="user-info">User 1</span>
-					</a>
-				</li>
-				<li>
-					<a href="" class="user-portrait">
-						<img style="border-color: #3FC51B !important;" src="//style.anu.edu.au/_anu/4/images/placeholders/person.png" alt="">
-						<span style="background-color: #3FC51B;" class="user-info">User 2</span>                                                    
-					</a>
-				</li>
-			</ul>
 		</div>
 		<div class="table-striped yui3-widget yui3-datatable" id="<portlet:namespace />dataTable">
 			<div class="yui3-datatable-scrollable yui3-datatable-content" id="<portlet:namespace />dataTableContent"></div>
@@ -82,6 +79,9 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
            },
 		   'rivet-collaboration-spreadsheet': {
 			   fullpath: '/html/portlet/dynamic_data_lists/js/rivet-collaboration-spreadsheet.js'
+		   },
+		   'atmosphere': {
+			  fullpath: '/html/portlet/dynamic_data_lists/js/third-party/atmosphere.js'
 		   }
        }
 	}).use('rivet-collaboration-spreadsheet', function(A) {

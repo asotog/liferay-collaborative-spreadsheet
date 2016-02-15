@@ -1,0 +1,72 @@
+package com.rivetlogic.portlet.spreadsheet.atmosphere;
+
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentMap;
+
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.rivetlogic.portlet.spreadsheet.atmosphere.model.UserData;
+
+public class SpreadSheetHandlerUtil {
+	public static final String SESSIONID = "sessionId";
+	public static final String GUEST_USER_NAME_LABEL = "rivetlogic.spreadsheet.guest.name.label";
+	public static final String LOGGED_USERS_MAP_KEY = "rivetlogic.spreadsheet.logged.users.map";
+	
+	/* ACTIONS */
+    public static final String LOGIN = "login";
+	
+	/* JSON PROPERTIES */
+	public static final String USERS = "users";
+    public static final String TYPE = "type";
+    public static final String USERNAME = "userName";
+    public static final String USER_IMAGEPATH = "userImagePath";
+    public static final String BASE_IMAGEPATH = "baseImagePath";
+    public static final String COMMANDS = "commands";
+    public static final String CACHEID = "cacheId";
+    public static final String ACTION = "action";
+    
+	private static final Log LOG = LogFactoryUtil.getLog(SpreadSheetHandlerUtil.class);
+	
+	/**
+     * Generate JSON from current logged users map.
+     * 
+     * @param loggedUserMap
+     * @return
+     */
+    public static JSONObject generateLoggedUsersJSON(ConcurrentMap<String, UserData> loggedUserMap) {
+        JSONObject usersLogged = JSONFactoryUtil.createJSONObject();
+        JSONObject usersUpdateCommand = JSONFactoryUtil.createJSONObject();
+        JSONArray commands = JSONFactoryUtil.createJSONArray();
+        JSONArray users = JSONFactoryUtil.createJSONArray();
+
+        usersUpdateCommand.put(ACTION, USERS);
+
+        for (Entry<String, UserData> entry : loggedUserMap.entrySet()) {
+            String key = entry.getKey();
+            UserData userData = entry.getValue();
+            JSONObject user = JSONFactoryUtil.createJSONObject();
+            LOG.debug(user);
+            user.put(USERNAME, userData.getUserName());
+            user.put(USER_IMAGEPATH, userData.getUserImagePath());
+            user.put(SESSIONID, key);
+            users.put(user);
+        }
+
+        usersUpdateCommand.put(USERS, users);
+
+        /* add to commands */
+        commands.put(usersUpdateCommand);
+
+        /* add commands to main json */
+        usersLogged.put(COMMANDS, commands);
+
+        LOG.debug(usersLogged.toString());
+
+        return usersLogged;
+
+    }
+
+}
