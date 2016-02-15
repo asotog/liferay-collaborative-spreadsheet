@@ -131,6 +131,11 @@ AUI.add(
                     this.bindSpreadSheet();
                 },
                 
+                /*
+                * Attaches all the events to the spreadsheet table
+                * 
+                *
+                */
                 bindSpreadSheet: function() {
                     var instance = this;
                     instance.after('highlightColorChange', A.bind(instance._highlightColorChanged, instance));
@@ -159,18 +164,59 @@ AUI.add(
                         cellList.removeClass('cell-highlight').removeClass('current-user');
                         var cell = e.currentTarget;
                         instance._updateHighlightCellColor(cell);
+                        instance._publishCellHighlight(cell);
                     }, '.' + instance.CLASS_NAMES_CELL_EDITOR_SUPPORT.cell, this);
                 },
                 
+                /*
+                * Triggers event with the give selected cell data
+                * 
+                *
+                */
+                _publishCellHighlight: function(cell) {
+                    var col = cell.getDOMNode().className.match(/(^|\s)(table\-col\-[^\s]*)/)[0];
+                    var record = cell.ancestor('tr').getAttribute('data-yui3-record');
+                    this.fire('cellHighlighted', {col: col, record: record});
+                },
+                
+                /*
+                * Listens the highlight color value changes
+                * 
+                *
+                */
                 _highlightColorChanged: function() {
                     if (this.get('boundingBox').one(HIGHLIGHTED_CELL)) {
                         this._updateHighlightCellColor(this.get('boundingBox').one(HIGHLIGHTED_CELL));
                     }
                 },
-
+                
+                /*
+                * Updates cell color
+                * 
+                *
+                */
                 _updateHighlightCellColor: function(cell) {
                     cell.addClass('cell-highlight').addClass('current-user');
                     cell.setStyle('border-color', this.get('highlightColor'));
+                },
+                
+                /*
+                * Updates cell color by give color parameter and puts title over the 
+                * cell
+                * 
+                *
+                */
+                _updateTitledHighlightCellByClasses: function(data) {
+                    if (data.cell) {
+                        this.get('boundingBox').all('.' + data.refClass + ' .cell-highlight-title').remove();
+                        var cells = this.get('boundingBox').all('.' + data.refClass);
+                        cells.setStyle('border-color', '');
+                        cells.removeClass(data.refClass).removeClass('cell-highlight');
+                        data.cell.addClass(data.refClass).addClass('cell-highlight');
+                        data.cell.setStyle('border-color', data.color);
+                        data.cell.append('<span style="background-color: ' + data.color + 
+                            ';" class="cell-highlight-title">' + data.title + '</span>')
+                    }
                 }
             }
         });

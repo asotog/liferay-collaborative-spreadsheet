@@ -34,7 +34,7 @@
 	    border-style: solid;
 	    border-color: #3FC51B; /* TODO: remove this just for testing css */
 	    position: relative;
-		.user-info {
+		.cell-highlight-title {
 		    background-color: #3FC51B; /* TODO: remove this just for testing css; */
 		    color: #FFFFFF;
 		    font-size: 12px;

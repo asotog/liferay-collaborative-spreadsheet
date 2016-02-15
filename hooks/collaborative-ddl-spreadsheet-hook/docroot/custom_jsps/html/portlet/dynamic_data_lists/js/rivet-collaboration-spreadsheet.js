@@ -43,6 +43,7 @@ AUI.add(
                     bindCollaborativeEvents: function() {
                         this.bindAtmosphere();
                         this.after('onlineUsersChange', A.bind(this._renderOnlineUsers, this));
+                        this.on('cellHighlighted', A.bind(this._currentUserCellHighlighted, this));
                     },
                     
                     /**
@@ -55,6 +56,15 @@ AUI.add(
                         this.usersOnlineNode.append(TEMPLATES.usersOnline({users: this.get('onlineUsers')}));
                     },
                     
+                    _currentUserCellHighlighted: function(e) {
+                        this.ws.push(A.JSON.stringify({
+                            action:  RivetCollaborationSpreadSheet.CONSTANTS.CELL_HIGHLIGHTED,
+                            userId: Liferay.ThemeDisplay.getUserId(),
+                            record: e.record,
+                            column: e.col    
+                        }));
+                    },
+
                     /**
                     * Initializes and binds atmosphere events
                     *
@@ -77,7 +87,7 @@ AUI.add(
 
                         request.onOpen = function (response) {
                             instance.ws.push(A.JSON.stringify({
-                                type:  RivetCollaborationSpreadSheet.CONSTANTS.LOGIN
+                                action:  RivetCollaborationSpreadSheet.CONSTANTS.LOGIN
                             }));
                         };
                         
@@ -102,7 +112,10 @@ AUI.add(
                         A.Array.each(data.commands, function(item, index) {
                             switch(item.action) {
                                 case RivetCollaborationSpreadSheet.CONSTANTS.USERS:
-                                    instance.preProcessUsers(item.users)
+                                    instance.onUsersMessage(item.users);
+                                    break;
+                                case RivetCollaborationSpreadSheet.CONSTANTS.CELL_HIGHLIGHTED:
+                                    instance.onCellHighlightMessage(item);
                                     break;
                                 default:
                                     console.error('Unable to match command');
@@ -115,7 +128,7 @@ AUI.add(
                     * because message returns all the users everytime another user joins
                     *
                     */
-                    preProcessUsers: function(users) {
+                    onUsersMessage: function(users) {
                         var instance = this;
                         var onlineUsersTmp = [];
                         A.Array.each(users, function(item, index) {
@@ -124,15 +137,46 @@ AUI.add(
                             if (item.userId === Liferay.ThemeDisplay.getUserId()) {
                                 instance.set('highlightColor', item.color);
                             };
+                            item.userName = (item.userName === 'rivetlogic.spreadsheet.guest.name.label') ? 'Guest' : item.userName;
                             onlineUsersTmp.push(item);
                         });
                         this.set('onlineUsers', onlineUsersTmp);
+                    },
+                    
+                    /*
+                    * Highlight cells that belongs to other users interactions
+                    * 
+                    *
+                    */
+                    onCellHighlightMessage: function(data) {
+                        var instance = this;
+                        if (Liferay.ThemeDisplay.getUserId() === data.userId) {
+                            return;
+                        }
+                        var cellSelector = '[data-yui3-record="' + data.record + '"] .' + data.column;
+                        var cell = instance.get('boundingBox').one(cellSelector);
+                        var user = instance.getUserFromOnlineList(data.userId);
+                        instance._updateTitledHighlightCellByClasses({
+                            title: user.userName,
+                            refClass: 'usercell-' + data.userId,
+                            cell: cell,
+                            color: A.UsersColors.USERS_COLORS[data.userId]
+                        });
+                    },
+                    
+                    getUserFromOnlineList: function(userId) {
+                        for (var i = 0; i < this.get('onlineUsers').length; i++) {
+                            if (this.get('onlineUsers')[i].userId === userId) {
+                                return this.get('onlineUsers')[i];
+                            }
+                        }
                     }
                 }
             });
 
             RivetCollaborationSpreadSheet.CONSTANTS = {
                 LOGIN: 'login',
+                CELL_HIGHLIGHTED: 'cellHighlighted', // when users highlight cell
                 USERS: 'users' // identify when users online updated
             };
 

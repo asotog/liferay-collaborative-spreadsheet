@@ -131,14 +131,14 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
                 try {
                     JSONObject jsonMessage = JSONFactoryUtil.createJSONObject(message);
                     /* verify if user is signing in */
-                    if (SpreadSheetHandlerUtil.LOGIN.equals(jsonMessage.getString(SpreadSheetHandlerUtil.TYPE))) {
+                    if (SpreadSheetHandlerUtil.LOGIN.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
                         JSONObject usersLoggedMessage = SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap);
                         //event.getResource().getBroadcaster().broadcast(usersLoggedMessage);
                         event.getResource().write(usersLoggedMessage.toString());
-                    } else {
+                    } else if (SpreadSheetHandlerUtil.CELL_HIGHLIGHTED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
                         /* just broadcast the message */
 //                        LOG.debug("Broadcasting = " + message);
-//                        event.getResource().write(message);
+                        event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
                     }
                 } catch (JSONException e) {
                     LOG.debug("JSON parse failed");

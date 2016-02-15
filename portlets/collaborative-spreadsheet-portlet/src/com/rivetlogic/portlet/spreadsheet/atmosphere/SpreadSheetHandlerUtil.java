@@ -17,6 +17,7 @@ public class SpreadSheetHandlerUtil {
 	
 	/* ACTIONS */
     public static final String LOGIN = "login";
+    public static final String CELL_HIGHLIGHTED = "cellHighlighted";
 	
 	/* JSON PROPERTIES */
 	public static final String USERS = "users";
@@ -69,6 +70,20 @@ public class SpreadSheetHandlerUtil {
 
         return usersLogged;
 
+    }
+    
+    public static JSONObject generateCommands(JSONObject newCommand) {
+        JSONObject jsonObj = JSONFactoryUtil.createJSONObject();
+        JSONArray commands = JSONFactoryUtil.createJSONArray();
+
+        commands.put(newCommand);
+
+        /* add commands to main json */
+        jsonObj.put(COMMANDS, commands);
+
+        LOG.debug(jsonObj.toString());
+
+        return jsonObj;
     }
 
 }
