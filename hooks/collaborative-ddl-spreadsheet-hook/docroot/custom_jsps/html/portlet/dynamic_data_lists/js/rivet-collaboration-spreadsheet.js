@@ -183,7 +183,7 @@ AUI.add(
                             title: user.userName,
                             refClass: 'usercell-' + data.userId,
                             cell: cell,
-                            color: A.UsersColors.USERS_COLORS[data.userId]
+                            color: A.UsersColors.pickColor(data.userId)
                         });
                     },
                     
