@@ -44,6 +44,7 @@ AUI.add(
                         this.bindAtmosphere();
                         this.after('onlineUsersChange', A.bind(this._renderOnlineUsers, this));
                         this.on('cellHighlighted', A.bind(this._currentUserCellHighlighted, this));
+                        this.on('cellValueUpdated', A.bind(this._currentUserCellValueUpdated, this));
                     },
                     
                     /**
@@ -56,10 +57,30 @@ AUI.add(
                         this.usersOnlineNode.append(TEMPLATES.usersOnline({users: this.get('onlineUsers')}));
                     },
                     
+                    /**
+                    * Triggers message with the cell information that current user is highlighting
+                    *
+                    *
+                    */
                     _currentUserCellHighlighted: function(e) {
                         this.ws.push(A.JSON.stringify({
                             action:  RivetCollaborationSpreadSheet.CONSTANTS.CELL_HIGHLIGHTED,
                             userId: Liferay.ThemeDisplay.getUserId(),
+                            record: e.record,
+                            column: e.col    
+                        }));
+                    },
+                    
+                    /**
+                    * Triggers message with the cell value that current user is updating
+                    *
+                    *
+                    */
+                    _currentUserCellValueUpdated: function(e) {
+                        this.ws.push(A.JSON.stringify({
+                            action:  RivetCollaborationSpreadSheet.CONSTANTS.CELL_VALUE_UPDATED,
+                            userId: Liferay.ThemeDisplay.getUserId(),
+                            value: e.value,
                             record: e.record,
                             column: e.col    
                         }));
@@ -117,6 +138,9 @@ AUI.add(
                                 case RivetCollaborationSpreadSheet.CONSTANTS.CELL_HIGHLIGHTED:
                                     instance.onCellHighlightMessage(item);
                                     break;
+                                case RivetCollaborationSpreadSheet.CONSTANTS.CELL_VALUE_UPDATED:
+                                    instance.onCellValueUpdateMessage(item);
+                                    break;
                                 default:
                                     console.error('Unable to match command');
                             };
@@ -125,8 +149,8 @@ AUI.add(
 
                     /*
                     * Assigns colors to users and verifies if they are already viewing document
-                    * because message returns all the users everytime another user joins
-                    *
+                    * because message returns all the users everytime another user joins,
+                    * triggered when message arrives
                     */
                     onUsersMessage: function(users) {
                         var instance = this;
@@ -144,8 +168,8 @@ AUI.add(
                     },
                     
                     /*
-                    * Highlight cells that belongs to other users interactions
-                    * 
+                    * Highlight cells that belongs to other users interactions,
+                    * triggered when message arrives
                     *
                     */
                     onCellHighlightMessage: function(data) {
@@ -153,8 +177,7 @@ AUI.add(
                         if (Liferay.ThemeDisplay.getUserId() === data.userId) {
                             return;
                         }
-                        var cellSelector = '[data-yui3-record="' + data.record + '"] .' + data.column;
-                        var cell = instance.get('boundingBox').one(cellSelector);
+                        var cell = instance.getCellFromRecord(data);
                         var user = instance.getUserFromOnlineList(data.userId);
                         instance._updateTitledHighlightCellByClasses({
                             title: user.userName,
@@ -164,6 +187,36 @@ AUI.add(
                         });
                     },
                     
+                    /*
+                    * Highlight cells that belongs to other users interactions
+                    * and updates cells value, triggered when message arrives
+                    * 
+                    *
+                    */
+                    onCellValueUpdateMessage: function(data) {
+                        if (Liferay.ThemeDisplay.getUserId() === data.userId) {
+                            return;
+                        }
+                        var cell = this.getCellFromRecord(data);
+                        cell.set('text', data.value);
+                        this.onCellHighlightMessage(data);
+                    },
+                    
+                    /*
+                    * Retrieves cell node from give col and record
+                    * 
+                    *
+                    */
+                    getCellFromRecord: function(data) {
+                        var cellSelector = '[data-yui3-record="' + data.record + '"] .' + data.column;
+                        return this.get('boundingBox').one(cellSelector);
+                    },
+                    
+                    /*
+                    * Gets user by id from the users list stored,
+                    * user item contains basic info such as userName,  
+                    * userId, color, userImagePath
+                    */
                     getUserFromOnlineList: function(userId) {
                         for (var i = 0; i < this.get('onlineUsers').length; i++) {
                             if (this.get('onlineUsers')[i].userId === userId) {
@@ -176,7 +229,8 @@ AUI.add(
 
             RivetCollaborationSpreadSheet.CONSTANTS = {
                 LOGIN: 'login',
-                CELL_HIGHLIGHTED: 'cellHighlighted', // when users highlight cell
+                CELL_HIGHLIGHTED: 'cellHighlighted', // when users highlight cell,
+                CELL_VALUE_UPDATED: 'cellValueUpdated', // when users are changing cell value
                 USERS: 'users' // identify when users online updated
             };
 

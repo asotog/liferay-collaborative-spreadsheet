@@ -2,115 +2,6 @@ AUI.add(
     'rivet-spreadsheet-datatable',
     function(A) {
         
-        var InlineCellEditor = A.Component.create({
-            
-            /**
-            * Static property provides a string to identify the class.
-            *
-            * @property NAME
-            * @type String
-            * @static
-            */
-            NAME: 'inlineCellEditor',
-            
-            /**
-            * Static property used to define which component it extends.
-            *
-            * @property EXTENDS
-            * @type Object
-            * @static
-            */
-            EXTENDS: A.Base,
-            
-            prototype: {
-                ELEMENT_TEMPLATE: '<input type="text">', // avoids error, this value is expected by BaseCellEditor
-                initializer: function(config) {
-                    var instance = this;
-                },
-                
-                /**
-                * Edits the selected cell, called externally from the data table definition
-                *
-                *
-                */
-                editInlineCell: function(tableData) {
-                    var tbl = tableData;
-                    tbl.activeCell.addClass('inline-cell-editor');
-                    if (!tbl.activeCell.one('input')) {
-                        this.showInlineCellField(tbl);
-                        this.bindInlineCell(tbl);
-                    }
-                },
-                
-                /**
-                * Attaches events
-                *
-                *
-                */
-                bindInlineCell: function(tableData) {
-                    var tbl = tableData;
-                    var instance = this;
-                    // ends editing cell
-                    tbl.activeCell.one('input').on('blur', function() {
-                        var val = this.get('value');
-                        this.remove();
-                        tbl.activeCell.set('text', val);
-                        try {
-                            tbl.record.set(tbl.column.key, this.get('value')); // update model
-                        } catch(e) {}
-                    });
-                    // editing cell value
-                    tbl.activeCell.one('input').on('keyup', function(e) {
-                        e.stopPropagation();
-                        if (this.get('value') !== instance.get('value')) {
-                            console.log(this.get('value'));
-                            instance.set('value', this.get('value'));
-                        }
-                    });
-                    
-                    // datatable lets the user switch cells with arrows so lets avoid 
-                    // while its on inline cell editing
-                    var stopCellSelection = function() {
-                        tbl.activeCell.one('input').once('key', function(e) {
-                            e.stopPropagation();
-                            stopCellSelection();
-                        }, 'down:enter,37,38,39,40');
-                    };
-                    stopCellSelection();
-                },
-                
-                /**
-                * Shows cell edit field
-                *
-                *
-                */
-                showInlineCellField: function(tableData) {
-                    var tbl = tableData;
-                    tbl.activeCell.append(this.ELEMENT_TEMPLATE);
-                    var field = tbl.activeCell.one('input');
-                    field.removeClass('hidden');
-                    field.set('value', tbl.record.get(tbl.column.key));
-                    field.focus();
-                }
-            },
-            ATTRS: {
-                
-                /**
-                * 
-                *
-                * @attribute editable
-                * @default false
-                * @type Boolean
-                */
-                editable: {
-                    value: true,
-                    validator: A.Lang.isBoolean
-                }
-            }
-        });
-        
-        Liferay.RivetInlineCellEditor = InlineCellEditor;
-        
         var HIGHLIGHTED_CELL = '.cell-highlight.current-user.table-cell';
 
         var RivetSpreadSheet = A.Component.create({
@@ -153,7 +44,8 @@ AUI.add(
                         editor.editInlineCell({
                             activeCell: activeCell,
                             record: record,
-                            column: column
+                            column: column,
+                            table: instance
                         });
                     }, '.' + instance.CLASS_NAMES_CELL_EDITOR_SUPPORT.cell, this);
                     
@@ -174,9 +66,18 @@ AUI.add(
                 *
                 */
                 _publishCellHighlight: function(cell) {
+                    this.fire('cellHighlighted', this.getCellData(cell));
+                },
+                
+                /*
+                * Retrieves cell information such as record id and col name
+                * 
+                *
+                */
+                getCellData: function(cell) {
                     var col = cell.getDOMNode().className.match(/(^|\s)(table\-col\-[^\s]*)/)[0];
                     var record = cell.ancestor('tr').getAttribute('data-yui3-record');
-                    this.fire('cellHighlighted', {col: col, record: record});
+                    return {col: col, record: record};
                 },
                 
                 /*
@@ -238,5 +139,5 @@ AUI.add(
         },
         '1.0',
         {
-            requires: ['aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'liferay-portlet-dynamic-data-lists']
+            requires: ['rivet-inline-cell', 'aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'liferay-portlet-dynamic-data-lists']
         })
