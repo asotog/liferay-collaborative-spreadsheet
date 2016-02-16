@@ -36,6 +36,8 @@ AUI.add(
                 editInlineCell: function(tableData) {
                     var tbl = tableData;
                     tbl.activeCell.addClass('inline-cell-editor');
+                    var val = Liferay.RivetInlineCellEditor.getCellValue(tbl.activeCell);
+                    Liferay.RivetInlineCellEditor.setCellValue(tbl.activeCell, val);
                     if (!tbl.activeCell.one('input')) {
                         this.showInlineCellField(tbl);
                         this.bindInlineCell(tbl);
@@ -54,7 +56,7 @@ AUI.add(
                     tbl.activeCell.one('input').on('blur', function() {
                         var val = this.get('value');
                         this.remove();
-                        tbl.activeCell.set('text', val);
+                        Liferay.RivetInlineCellEditor.setCellValue(tbl.activeCell, val);
                         try {
                             tbl.record.set(tbl.column.key, this.get('value')); // update model
                         } catch(e) {}
@@ -88,7 +90,7 @@ AUI.add(
                 */
                 showInlineCellField: function(tableData) {
                     var tbl = tableData;
-                    var value = tbl.activeCell.get('text');
+                    var value = Liferay.RivetInlineCellEditor.getCellValue(tbl.activeCell);
                     tbl.activeCell.append(this.ELEMENT_TEMPLATE);
                     var field = tbl.activeCell.one('input');
                     field.removeClass('hidden');
@@ -113,7 +115,21 @@ AUI.add(
         });
         
         Liferay.RivetInlineCellEditor = InlineCellEditor;
+    
+        Liferay.RivetInlineCellEditor.setCellValue = function(cell, value) {
+            if (!cell.one('span.value')) {
+                cell.empty();
+                cell.append('<span class="value"></span>');
+            }
+            cell.one('span.value').set('text', value);
+        };
 
+        Liferay.RivetInlineCellEditor.getCellValue = function(cell) {
+            if (cell.one('span.value')) {
+                return cell.one('span.value').get('text');
+            }
+            return cell.getDOMNode().childNodes[0].textContent;
+        };
         },
         '1.0',
         {

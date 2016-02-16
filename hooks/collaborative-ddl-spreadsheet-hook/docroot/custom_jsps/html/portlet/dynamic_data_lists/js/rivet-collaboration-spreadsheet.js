@@ -198,7 +198,7 @@ AUI.add(
                             return;
                         }
                         var cell = this.getCellFromRecord(data);
-                        cell.set('text', data.value);
+                        Liferay.RivetInlineCellEditor.setCellValue(cell, data.value);
                         this.onCellHighlightMessage(data);
                     },
                     
@@ -238,5 +238,5 @@ AUI.add(
         },
     	'',
     	{
-    		requires: ['rivet-spreadsheet-datatable', 'rivet-users-color', 'atmosphere', 'aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'handlebars']
+    		requires: ['rivet-inline-cell', 'rivet-spreadsheet-datatable', 'rivet-users-color', 'atmosphere', 'aui-arraysort', 'aui-datatable', 'datatable-sort', 'json', 'liferay-portlet-url', 'liferay-util-window', 'handlebars']
     	})
