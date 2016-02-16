@@ -33,7 +33,7 @@ AUI.add(
                     
                     instance.delegate(instance.get('editEvent'), function(e) {
                         var activeCell = instance.get('activeCell'),
-                        alignNode = event.alignNode || activeCell,
+                        alignNode = e.alignNode || activeCell,
                         column = instance.getColumn(alignNode),
                         record = instance.getRecord(alignNode),
                         editor = instance.getEditor(record, column);

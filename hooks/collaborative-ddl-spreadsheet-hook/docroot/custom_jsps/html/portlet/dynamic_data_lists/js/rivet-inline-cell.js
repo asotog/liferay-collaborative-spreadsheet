@@ -128,7 +128,8 @@ AUI.add(
             if (cell.one('span.value')) {
                 return cell.one('span.value').get('text');
             }
-            if (cell.getDOMNode().childNodes[0]) {
+            // if first child node exists and it is dom type text
+            if (cell.getDOMNode().childNodes[0] && cell.getDOMNode().childNodes[0].nodeType == 3) {
                 return cell.getDOMNode().childNodes[0].textContent;
             }
             return '';
