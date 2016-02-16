@@ -128,7 +128,10 @@ AUI.add(
             if (cell.one('span.value')) {
                 return cell.one('span.value').get('text');
             }
-            return cell.getDOMNode().childNodes[0].textContent;
+            if (cell.getDOMNode().childNodes[0]) {
+                return cell.getDOMNode().childNodes[0].textContent;
+            }
+            return '';
         };
         },
         '1.0',
