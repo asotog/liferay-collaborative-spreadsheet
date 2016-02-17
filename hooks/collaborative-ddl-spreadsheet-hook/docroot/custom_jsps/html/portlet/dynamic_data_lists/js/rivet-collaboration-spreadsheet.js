@@ -206,6 +206,14 @@ AUI.add(
                         var cell = this.getCellFromRecord(data);
                         Liferay.RivetInlineCellEditor.setCellValue(cell, data.value);
                         this.onCellHighlightMessage(data);
+                        // if raw value means cell is liferay core provided non rivet logic customized
+                        if (typeof data.rawValue != 'undefined') {
+                            var column = this.getColumn(cell);
+                            var record = this.getRecord(cell);
+                            // set the local model and avoid fire event, to prevent
+                            // looping to the same event listeners
+                            record.set(column.key, data.rawValue, {silent: true});
+                        }
                     },
                     
                     /*
