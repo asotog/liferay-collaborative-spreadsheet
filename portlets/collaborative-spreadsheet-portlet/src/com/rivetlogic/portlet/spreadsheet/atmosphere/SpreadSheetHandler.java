@@ -143,6 +143,10 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
                         /* just broadcast the message */
 //                      LOG.debug("Broadcasting = " + message);
                       event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
+                    } else if (SpreadSheetHandlerUtil.ROW_ADDED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
+                        /* just broadcast the message */
+//                      LOG.debug("Broadcasting = " + message);
+                      event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
                     }
                 } catch (JSONException e) {
                     LOG.debug("JSON parse failed");

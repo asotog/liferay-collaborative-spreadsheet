@@ -210,10 +210,12 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 				'click',
 				function(event) {
 					var numberOfRecords = parseInt(numberOfRecordsNode.val(), 10) || 0;
-
+					
 					spreadSheet.addEmptyRows(numberOfRecords);
-
-					spreadSheet.updateMinDisplayRows(spreadSheet.get('data').size());
+					<%-- Custom callback added when response returns broadcast message to the rest of the users connected --%>
+					spreadSheet.updateMinDisplayRows(spreadSheet.get('data').size(), function() {
+						spreadSheet.addEmptyRowsAndBroadcast(numberOfRecords);
+					});
 				}
 			);
 		</c:if>

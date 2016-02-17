@@ -147,6 +147,9 @@ AUI.add(
                                 case RivetCollaborationSpreadSheet.CONSTANTS.CELL_VALUE_UPDATED:
                                     instance.onCellValueUpdateMessage(item);
                                     break;
+                                case RivetCollaborationSpreadSheet.CONSTANTS.ROWS_ADDED:
+                                    instance.onRowsAddedMessage(item);
+                                    break;
                                 default:
                                     console.error('Unable to match command');
                             };
@@ -156,7 +159,7 @@ AUI.add(
                     /*
                     * Assigns colors to users and verifies if they are already viewing document
                     * because message returns all the users everytime another user joins,
-                    * triggered when message arrives
+                    * called when message arrives
                     */
                     onUsersMessage: function(users) {
                         var instance = this;
@@ -175,7 +178,7 @@ AUI.add(
                     
                     /*
                     * Highlight cells that belongs to other users interactions,
-                    * triggered when message arrives
+                    * called when message arrives
                     *
                     */
                     onCellHighlightMessage: function(data) {
@@ -194,8 +197,18 @@ AUI.add(
                     },
                     
                     /*
+                    * Called when rows added message arrives
+                    */
+                    onRowsAddedMessage: function(data) {
+                        var instance = this;
+                        if (Liferay.ThemeDisplay.getUserId() !== data.userId) {
+                            this.addEmptyRows(data.num);
+                        }
+                    },
+
+                    /*
                     * Highlight cells that belongs to other users interactions
-                    * and updates cells value, triggered when message arrives
+                    * and updates cells value, called when message arrives
                     * 
                     *
                     */
@@ -237,6 +250,18 @@ AUI.add(
                                 return this.get('onlineUsers')[i];
                             }
                         }
+                    },
+                    
+                    /*
+                    * Once user adds more rows, this sends message to the 
+                    * other users in order to add the rows as well
+                    */
+                    addEmptyRowsAndBroadcast: function(num) {
+                        this.ws.push(A.JSON.stringify({
+                            action: RivetCollaborationSpreadSheet.CONSTANTS.ROWS_ADDED,
+                            num: num,
+                            userId: Liferay.ThemeDisplay.getUserId()
+                        }));
                     }
                 }
             });
@@ -245,6 +270,7 @@ AUI.add(
                 LOGIN: 'login',
                 CELL_HIGHLIGHTED: 'cellHighlighted', // when users highlight cell,
                 CELL_VALUE_UPDATED: 'cellValueUpdated', // when users are changing cell value
+                ROWS_ADDED: 'rowsAdded', // when users are changing cell value
                 USERS: 'users' // identify when users online updated
             };
 
