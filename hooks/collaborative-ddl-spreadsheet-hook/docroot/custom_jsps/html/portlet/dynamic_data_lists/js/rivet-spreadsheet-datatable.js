@@ -30,6 +30,7 @@ AUI.add(
                 bindSpreadSheet: function() {
                     var instance = this;
                     instance.after('highlightColorChange', A.bind(instance._highlightColorChanged, instance));
+                    instance.on('model:change', instance._onCellValueUpdate);
                     
                     instance.delegate(instance.get('editEvent'), function(e) {
                         var activeCell = instance.get('activeCell'),
@@ -80,6 +81,29 @@ AUI.add(
                     return {col: col, record: record};
                 },
                 
+                /*
+                * Listens every record change, if editor cell not RivetInlineCellEditor, 
+                * it triggers cellValueUpdated event
+                * This method handles liferay default field types data changes
+                */
+                _onCellValueUpdate: function(e) {
+                    var instance = this;
+                    var column = instance.getColumn(instance.get('activeCell'));
+                    var record = instance.getRecord(instance.get('activeCell'));
+                    var editor = instance.getEditor(record, column);
+                    if (editor instanceof Liferay.RivetInlineCellEditor) {
+                        return;
+                    }
+                    // wait a bit for cell to be updated with the formatted val
+                    window.setTimeout(function() {
+                        var value = Liferay.RivetInlineCellEditor.getCellValue(instance.get('activeCell'));
+                        var data = instance.getCellData(instance.get('activeCell'));
+                        data.value = value;
+                        data.rawValue = record.get(column.key);
+                        instance.fire('cellValueUpdated', data);
+                    }, 100);
+                }, 
+
                 /*
                 * Listens the highlight color value changes
                 * 

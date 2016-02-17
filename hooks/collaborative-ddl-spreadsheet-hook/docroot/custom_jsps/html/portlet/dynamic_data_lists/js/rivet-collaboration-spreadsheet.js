@@ -77,13 +77,19 @@ AUI.add(
                     *
                     */
                     _currentUserCellValueUpdated: function(e) {
-                        this.ws.push(A.JSON.stringify({
+                        var data = {
                             action:  RivetCollaborationSpreadSheet.CONSTANTS.CELL_VALUE_UPDATED,
                             userId: Liferay.ThemeDisplay.getUserId(),
                             value: e.value,
                             record: e.record,
                             column: e.col    
-                        }));
+                        };
+                        // if cell value event contains rawValue means that cell editor
+                        // is not the custom inline cell editor from rivetlogic
+                        if (e.rawValue) { 
+                            data.rawValue = e.rawValue;
+                        }
+                        this.ws.push(A.JSON.stringify(data));
                     },
 
                     /**
