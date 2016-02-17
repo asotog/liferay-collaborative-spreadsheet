@@ -35,6 +35,7 @@ AUI.add(
                 */
                 editInlineCell: function(tableData) {
                     var tbl = tableData;
+                    tbl.activeCell.removeClass('table-cell'); // class is removed and then added because of FF issue
                     tbl.activeCell.addClass('inline-cell-editor');
                     var val = Liferay.RivetInlineCellEditor.getCellValue(tbl.activeCell);
                     Liferay.RivetInlineCellEditor.setCellValue(tbl.activeCell, val);
@@ -54,6 +55,7 @@ AUI.add(
                     var instance = this;
                     // ends editing cell
                     tbl.activeCell.one('input').on('blur', function() {
+                        tbl.activeCell.addClass('table-cell'); // class is removed and then added because of FF issue
                         var val = this.get('value');
                         this.remove();
                         Liferay.RivetInlineCellEditor.setCellValue(tbl.activeCell, val);

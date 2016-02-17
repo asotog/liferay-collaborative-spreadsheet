@@ -2,7 +2,7 @@ AUI.add(
     'rivet-spreadsheet-datatable',
     function(A) {
         
-        var HIGHLIGHTED_CELL = '.cell-highlight.current-user.table-cell';
+        var HIGHLIGHTED_CELL = '.cell-highlight.current-user';
 
         var RivetSpreadSheet = A.Component.create({
             ATTRS: {
