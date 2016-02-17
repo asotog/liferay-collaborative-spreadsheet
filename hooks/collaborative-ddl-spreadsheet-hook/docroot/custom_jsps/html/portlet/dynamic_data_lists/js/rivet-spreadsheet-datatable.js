@@ -55,6 +55,11 @@ AUI.add(
                         var cellList = instance.get('boundingBox').all(HIGHLIGHTED_CELL);
                         cellList.setStyle('border-color', '');
                         cellList.removeClass('cell-highlight').removeClass('current-user');
+                        cellList.each(function() {
+                            if (this.one('.cell-highlight-title')) {
+                                this.one('.cell-highlight-title').remove();
+                            }
+                        ;})
                         var cell = e.currentTarget;
                         instance._updateHighlightCellColor(cell);
                         instance._publishCellHighlight(cell);
