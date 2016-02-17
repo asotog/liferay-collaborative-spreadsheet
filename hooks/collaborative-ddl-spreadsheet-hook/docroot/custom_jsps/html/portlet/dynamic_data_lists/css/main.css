@@ -10,7 +10,6 @@
 
 /* CUSTOM */
 .inline-cell-editor {
-	background-clip: padding-box;
     position: relative;
 
 	input {
@@ -30,6 +29,9 @@
 
 .realtime-spreadsheet table {
     width: 100%;
+	td {
+		background-clip: padding-box;
+	}
 	.cell-highlight {
 	    border: 1px;
 	    border-style: solid;
