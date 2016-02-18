@@ -116,6 +116,34 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
         }
     }
 	
+	/**
+	 * Remove a user from logged users
+	 * 
+	 * @return
+	 */
+	private ConcurrentMap<String, UserData> removeLoggedUser(ConcurrentMap<String, UserData> loggedUserMap, String loggedOutUserId) {
+        
+        if (null == loggedUserMap) {
+            loggedUserMap = new ConcurrentSkipListMap<String, UserData>();
+        }else{
+        	String keyToRemove = null;
+        	for (Entry<String, UserData> entry : loggedUserMap.entrySet()) {
+                String key = entry.getKey();
+                String userId = entry.getValue().getUserId();
+                if(loggedOutUserId.equals(userId)){
+                	keyToRemove = key;
+                	break;
+                }
+            }
+        	if(null != keyToRemove){
+        		LOG.debug(keyToRemove);
+        		loggedUserMap.remove(keyToRemove);
+        	}
+        }
+        
+        return loggedUserMap;
+    }
+	
 	@Override
     public void onStateChange(AtmosphereResourceEvent event) throws IOException {
 
@@ -147,7 +175,15 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
                         /* just broadcast the message */
 //                      LOG.debug("Broadcasting = " + message);
                       event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
+                    }else if (SpreadSheetHandlerUtil.ONLINE_USERS_UPDATED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
+                    	String userId =jsonMessage.getString(SpreadSheetHandlerUtil.USER_ID);
+                    	loggedUserMap = removeLoggedUser(loggedUserMap,userId);
+                    	JSONObject usersLoggedMessage = SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap);
+                    	//LOG.debug("After user removal:\t"+usersLoggedMessage.toString());
+                    	event.getResource().write(usersLoggedMessage.toString());
+                    	//event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
                     }
+					
                 } catch (JSONException e) {
                     LOG.debug("JSON parse failed");
                 }

@@ -119,7 +119,11 @@ AUI.add(
                         };
                         
                         request.onClose = function (response) {
-                            console.log(response);
+                            console.log("onClose "+JSON.stringify(response));
+                            instance.ws.push(A.JSON.stringify({
+                            	userId: Liferay.ThemeDisplay.getUserId(),
+                                action:  RivetCollaborationSpreadSheet.CONSTANTS.ONLINE_USERS_UPDATED
+                            }));
                         };
 
                         instance.ws = atmosphere.subscribe(request);
@@ -149,6 +153,10 @@ AUI.add(
                                     break;
                                 case RivetCollaborationSpreadSheet.CONSTANTS.ROWS_ADDED:
                                     instance.onRowsAddedMessage(item);
+                                    break;
+				case RivetCollaborationSpreadSheet.CONSTANTS.ONLINE_USERS_UPDATED:
+                                    instance.onlineUsersUpdatedMessage(item);
+                                    
                                     break;
                                 default:
                                     console.error('Unable to match command');
@@ -230,6 +238,17 @@ AUI.add(
                     },
                     
                     /*
+                     * Update userslist in spreadsheet
+                     * 
+                     * 
+                     *
+                     */
+                     onlineUsersUpdatedMessage: function(data) {
+                         console.log("users updated: "+data);
+                         //instance.onUsersMessage(data.users);
+                     },
+                     
+                    /*
                     * Retrieves cell node from give col and record
                     * 
                     *
@@ -271,7 +290,8 @@ AUI.add(
                 CELL_HIGHLIGHTED: 'cellHighlighted', // when users highlight cell,
                 CELL_VALUE_UPDATED: 'cellValueUpdated', // when users are changing cell value
                 ROWS_ADDED: 'rowsAdded', // when users are changing cell value
-                USERS: 'users' // identify when users online updated
+                USERS: 'users', // identify when users online updated
+		ONLINE_USERS_UPDATED: "onlineUsersUpdated"
             };
 
             Liferay.RivetCollaborationSpreadSheet = RivetCollaborationSpreadSheet;
