@@ -83,7 +83,10 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
         
         // user joined
         String sessionId = resource.session().getId();
-        if (loggedUserMap.get(sessionId) == null) {
+        String spreadsheetId  = URLDecoder.decode( resource.getRequest().getParameter(SpreadSheetHandlerUtil.SPREADSHEET_ID), ENCODING);
+		String spreadsheetSessionId = spreadsheetId+StringPool.UNDERLINE+sessionId;
+		
+        if (loggedUserMap.get(spreadsheetSessionId) == null) {
 
             try {
 
@@ -109,10 +112,10 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
                 LOG.error(e.getMessage());
             }
 
-            loggedUserMap.put(resource.session().getId(), new UserData(userName, userImagePath, userId));
+            loggedUserMap.put(spreadsheetSessionId, new UserData(userName, userImagePath, userId, spreadsheetId));
 
             /* listens to disconnection event */
-            resource.addEventListener(new SpreadSheetResourceEventListener(loggedUserMap, sessionId));
+            resource.addEventListener(new SpreadSheetResourceEventListener(loggedUserMap, spreadsheetSessionId));
         }
     }
 	
