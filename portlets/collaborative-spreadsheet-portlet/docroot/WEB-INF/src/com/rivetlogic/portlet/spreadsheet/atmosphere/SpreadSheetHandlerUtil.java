@@ -20,7 +20,6 @@ public class SpreadSheetHandlerUtil {
     public static final String CELL_HIGHLIGHTED = "cellHighlighted";
     public static final String CELL_VALUE_UPDATED = "cellValueUpdated";
     public static final String ROW_ADDED = "rowsAdded";
-	public static final String ONLINE_USERS_UPDATED = "onlineUsersUpdated";
     
 	/* JSON PROPERTIES */
 	public static final String USERS = "users";

@@ -40,7 +40,7 @@ public class SpreadSheetResourceEventListener implements AtmosphereResourceEvent
 	public void onDisconnect(AtmosphereResourceEvent event) {
 		/* removes user from map and broadcast users list again */
         this.loggedUserMap.remove(sessionId);
-        //event.getResource().getBroadcaster().broadcast(SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap));
+        event.getResource().getBroadcaster().broadcast(SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap));
 
 	}
 
