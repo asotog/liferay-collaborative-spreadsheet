@@ -3,6 +3,7 @@ AUI.add(
     function(A) {
         
         var HIGHLIGHTED_CELL = '.cell-highlight.current-user';
+        var BORDER_COLOR = 'border-color';
 
         var RivetSpreadSheet = A.Component.create({
             ATTRS: {
@@ -53,7 +54,7 @@ AUI.add(
                     // highlight
                     instance.delegate('click', function(e) {
                         var cellList = instance.get('boundingBox').all(HIGHLIGHTED_CELL);
-                        cellList.setStyle('border-color', '');
+                        cellList.setStyle(BORDER_COLOR, '');
                         cellList.removeClass('cell-highlight').removeClass('current-user');
                         cellList.each(function() {
                             if (this.one('.cell-highlight-title')) {
@@ -127,7 +128,7 @@ AUI.add(
                 */
                 _updateHighlightCellColor: function(cell) {
                     cell.addClass('cell-highlight').addClass('current-user');
-                    cell.setStyle('border-color', this.get('highlightColor'));
+                    cell.setStyle(BORDER_COLOR, this.get('highlightColor'));
                 },
                 
                 /*
@@ -140,13 +141,25 @@ AUI.add(
                     if (data.cell) {
                         this.get('boundingBox').all('.' + data.refClass + ' .cell-highlight-title').remove();
                         var cells = this.get('boundingBox').all('.' + data.refClass);
-                        cells.setStyle('border-color', '');
+                        cells.setStyle(BORDER_COLOR, '');
                         cells.removeClass(data.refClass).removeClass('cell-highlight');
                         data.cell.addClass(data.refClass).addClass('cell-highlight');
-                        data.cell.setStyle('border-color', data.color);
+                        data.cell.setStyle(BORDER_COLOR, data.color);
                         data.cell.append('<span style="background-color: ' + data.color + 
                             ';" class="cell-highlight-title">' + data.title + '</span>')
                     }
+                },
+                
+                /*
+                * Removes cell highlight by given class
+                */
+                clearHighlightByCellRef: function(cellRef) {
+                    this.get('boundingBox').all('.' + cellRef).each(function() {
+                        this.removeClass(cellRef);
+                        this.removeClass('cell-highlight');
+                        this.setStyle(BORDER_COLOR, '');
+                        this.one('.cell-highlight-title').remove();
+                    });
                 }
             }
         });

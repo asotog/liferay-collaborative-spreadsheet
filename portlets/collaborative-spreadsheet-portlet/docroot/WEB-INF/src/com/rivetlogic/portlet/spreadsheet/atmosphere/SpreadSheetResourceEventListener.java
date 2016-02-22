@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResourceEventListener;
 
+import com.liferay.portal.kernel.json.JSONObject;
 import com.rivetlogic.portlet.spreadsheet.atmosphere.model.UserData;
 
 public class SpreadSheetResourceEventListener implements AtmosphereResourceEventListener {
@@ -38,9 +39,11 @@ public class SpreadSheetResourceEventListener implements AtmosphereResourceEvent
 
 	@Override
 	public void onDisconnect(AtmosphereResourceEvent event) {
-		/* removes user from map and broadcast users list again */
-        this.loggedUserMap.remove(sessionId);
-        event.getResource().getBroadcaster().broadcast(SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap));
+		/* removes user from map and broadcast users list again also with the unlogged user */
+		UserData unloggedUser = this.loggedUserMap.get(sessionId);
+		this.loggedUserMap.remove(sessionId);
+		JSONObject users = SpreadSheetHandlerUtil.generateLoggedAndUnloggedUsersJSON(loggedUserMap, unloggedUser);
+        event.getResource().getBroadcaster().broadcast(users);
 
 	}
 

@@ -138,6 +138,9 @@ AUI.add(
                             switch(item.action) {
                                 case RivetCollaborationSpreadSheet.CONSTANTS.USERS:
                                     instance.onUsersMessage(item.users);
+                                    if (item.unloggedUser) {
+                                        instance.onUserUnloggedMessage(item.unloggedUser);
+                                    }
                                     break;
                                 case RivetCollaborationSpreadSheet.CONSTANTS.CELL_HIGHLIGHTED:
                                     instance.onCellHighlightMessage(item);
@@ -174,6 +177,14 @@ AUI.add(
                         this.set('onlineUsers', onlineUsersTmp);
                     },
                     
+                    /*
+                    * Removes any  table user mark or highlight after any user goes away
+                    * called when message arrives
+                    */
+                    onUserUnloggedMessage: function(user) {
+                        this.clearHighlightByCellRef('usercell-' + user.userId);
+                    },    
+                
                     /*
                     * Highlight cells that belongs to other users interactions,
                     * called when message arrives

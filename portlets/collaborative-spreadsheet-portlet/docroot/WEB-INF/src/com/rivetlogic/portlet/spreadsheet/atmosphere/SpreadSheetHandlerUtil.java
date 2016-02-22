@@ -23,6 +23,7 @@ public class SpreadSheetHandlerUtil {
     
 	/* JSON PROPERTIES */
 	public static final String USERS = "users";
+	public static final String UNLOGGED_USER = "unloggedUser";
 	public static final String USER_ID = "userId";
     public static final String TYPE = "type";
     public static final String USERNAME = "userName";
@@ -72,6 +73,29 @@ public class SpreadSheetHandlerUtil {
 
         return usersLogged;
 
+    }
+    
+    /**
+     * Generates json object from regular logged users list but adding an unlogged user when gets disconnected 
+     * 
+     * @param loggedUserMap
+     * @param unloggedUserData
+     * @return
+     */
+    public static JSONObject generateLoggedAndUnloggedUsersJSON(ConcurrentMap<String, UserData> loggedUserMap, UserData unloggedUserData) {
+    	JSONObject usersJSON = SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap);
+    	JSONObject usersUpdateCommand = usersJSON.getJSONArray(COMMANDS).getJSONObject(0);
+    	
+    	JSONObject unloggedUser = JSONFactoryUtil.createJSONObject();
+        LOG.debug(unloggedUser);
+        unloggedUser.put(USERNAME, unloggedUserData.getUserName());
+        unloggedUser.put(USER_IMAGEPATH, unloggedUserData.getUserImagePath());
+        unloggedUser.put(USER_ID, unloggedUserData.getUserId());
+        unloggedUser.put(SESSIONID, "");
+    	
+        usersUpdateCommand.put(UNLOGGED_USER, unloggedUser);
+        
+    	return usersJSON;
     }
     
     public static JSONObject generateCommands(JSONObject newCommand) {
