@@ -29,13 +29,15 @@ public class UserData {
     private String userName;
     private String userImagePath;
     private String userId;
+    private String spreadsheetId;
     
-    public UserData(String userName, String userImagePath, String userId) {
-
+    public UserData(String userName, String userImagePath, String userId, String spreadsheetId) {
+    	
         super();
         this.userName = userName;
         this.userImagePath = userImagePath;
         this.userId = userId;
+        this.spreadsheetId = spreadsheetId;
     }
 
     public String getUserName() {
@@ -64,6 +66,14 @@ public class UserData {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getSpreadsheetId() {
+		return spreadsheetId;
+	}
+
+	public void setSpreadsheetId(String spreadsheetId) {
+		this.spreadsheetId = spreadsheetId;
 	}
     
 }

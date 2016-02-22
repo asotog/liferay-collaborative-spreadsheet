@@ -45,6 +45,7 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 		{{/each}}
 	</ul>
 </script>
+<input type="hidden" id="_currentSpreadsheetId" value="<%=recordSet.getRecordSetId()%>">
 <div class="lfr-spreadsheet-container">
 	<div id="<portlet:namespace />spreadsheet" class="realtime-spreadsheet">
 		<div class="collaboration-users">
@@ -195,7 +196,8 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 				],
 				recordsetId: <%= recordSet.getRecordSetId() %>,
 				structure: structure,
-				width: '100%'
+				width: '100%',
+				spreadsheetId: <%= recordSet.getRecordSetId() %>
 			}
 		);
 

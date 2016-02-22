@@ -32,6 +32,7 @@ public class SpreadSheetHandlerUtil {
     public static final String COMMANDS = "commands";
     public static final String CACHEID = "cacheId";
     public static final String ACTION = "action";
+    public static final String SPREADSHEET_ID = "spreadsheetId";
     
 	private static final Log LOG = LogFactoryUtil.getLog(SpreadSheetHandlerUtil.class);
 	
@@ -58,6 +59,7 @@ public class SpreadSheetHandlerUtil {
             user.put(USER_IMAGEPATH, userData.getUserImagePath());
             user.put(USER_ID, userData.getUserId());
             user.put(SESSIONID, key);
+            user.put(SPREADSHEET_ID, userData.getSpreadsheetId());
             users.put(user);
         }
 

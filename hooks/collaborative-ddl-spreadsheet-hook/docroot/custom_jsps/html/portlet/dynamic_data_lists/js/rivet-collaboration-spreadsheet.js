@@ -24,6 +24,10 @@ AUI.add(
                     }
                 },
                 
+                spreadsheetId: {
+                    value: ''
+                },
+                
                 CSS_PREFIX: 'table',
 
                 EXTENDS: Liferay.RivetSpreadSheet,
@@ -102,7 +106,7 @@ AUI.add(
                         var baseUrl = document.location.toString().split('/').slice(0, 3).join('/'); // gets only protocol, domain and port from current url
                         var request = {
                             url: baseUrl + '/delegate/collaborative-spreadsheet/?baseImagePath=' +
-                                encodeURIComponent(Liferay.ThemeDisplay.getPathImage()),
+                                encodeURIComponent(Liferay.ThemeDisplay.getPathImage()) + '&spreadsheetId=' + this.get('spreadsheetId'),
                             trackMessageLength: true,
                             transport: 'websocket'
                             //logLevel: 'debug'
@@ -172,7 +176,9 @@ AUI.add(
                                 instance.set('highlightColor', item.color);
                             };
                             item.userName = (item.userName === 'rivetlogic.spreadsheet.guest.name.label') ? 'Guest' : item.userName;
-                            onlineUsersTmp.push(item);
+                            if(item.spreadsheetId == document.getElementById('_currentSpreadsheetId').value){
+                            	onlineUsersTmp.push(item);
+                            }                            
                         });
                         this.set('onlineUsers', onlineUsersTmp);
                     },
