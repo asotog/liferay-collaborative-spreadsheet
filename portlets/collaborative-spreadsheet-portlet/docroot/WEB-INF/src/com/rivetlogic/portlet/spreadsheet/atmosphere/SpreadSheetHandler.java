@@ -40,20 +40,23 @@ import org.atmosphere.util.SimpleBroadcaster;
  */
 
 @Singleton
+@AtmosphereHandlerService(path = "/{sheet}", supportSession = true, interceptors = {
+		AtmosphereResourceLifecycleInterceptor.class,
+		TrackMessageSizeInterceptor.class,
+		BroadcastOnPostAtmosphereInterceptor.class,
+		SuspendTrackerInterceptor.class }, broadcaster = SimpleBroadcaster.class)
 
-@AtmosphereHandlerService(  path = "/", supportSession = true, 
-                            interceptors = {
-                                AtmosphereResourceLifecycleInterceptor.class, 
-                                TrackMessageSizeInterceptor.class,
-                                BroadcastOnPostAtmosphereInterceptor.class, 
-                                SuspendTrackerInterceptor.class }, 
-                            broadcaster = SimpleBroadcaster.class)
 public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
+
 	public static final String CACHE_NAME = SpreadSheetHandler.class.getName();
 	private static final String ENCODING = "UTF-8";
-	private static final Log LOG = LogFactoryUtil.getLog(SpreadSheetHandler.class);
+	private static final String BROADCAST_NAME_PREFIX="/delegate/collaborative-spreadsheet/";
+	private static final Log LOG = LogFactoryUtil
+			.getLog(SpreadSheetHandler.class);
 	@SuppressWarnings("rawtypes")
-    private static PortalCache portalCache = MultiVMPoolUtil.getCache(CACHE_NAME);
+	private static PortalCache portalCache = MultiVMPoolUtil
+			.getCache(CACHE_NAME);
+
 	
 	/**
 	 * Retrieves logged users from cache
@@ -61,100 +64,157 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    private ConcurrentMap<String, UserData> getLoggedUsersMap() {
+	private ConcurrentMap<String, UserData> getLoggedUsersMap(String sheetId) {
 
-        Object object = portalCache.get(SpreadSheetHandlerUtil.LOGGED_USERS_MAP_KEY);
-        ConcurrentMap<String, UserData> loggedUserMap = (ConcurrentMap<String, UserData>) object;
-        if (null == loggedUserMap) {
-            loggedUserMap = new ConcurrentSkipListMap<String, UserData>();
-            portalCache.put(SpreadSheetHandlerUtil.LOGGED_USERS_MAP_KEY, loggedUserMap);
-        }
-        return loggedUserMap;
-    }
+
+		Object sheet = portalCache
+				.get(SpreadSheetHandlerUtil.SHEET_MAP_KEY);
+		
+		ConcurrentMap<String, ConcurrentMap<String, UserData>> sheetUserMap = (ConcurrentMap<String, ConcurrentMap<String, UserData>>) sheet;
+		if (null == sheetUserMap) {
+			sheetUserMap = new ConcurrentSkipListMap<String, ConcurrentMap<String, UserData>>();
+			portalCache.put(SpreadSheetHandlerUtil.SHEET_MAP_KEY,
+					sheetUserMap);
+		}
+		
+		
+		ConcurrentMap<String, UserData> object = sheetUserMap.get(sheetId); 
+		
+		ConcurrentMap<String, UserData> loggedUserMap = (ConcurrentMap<String, UserData>) object;
+		if (null == loggedUserMap) {
+			loggedUserMap = new ConcurrentSkipListMap<String, UserData>();
+			sheetUserMap.put(sheetId,
+					loggedUserMap);
+		}
+		return loggedUserMap;
+	}
 	
+	private String extractBroadCastId(AtmosphereResource resource){
+		String name = resource.getBroadcaster().getID();
+		return name.replace(BROADCAST_NAME_PREFIX, "");
+	}
+
 	@Override
-    public void onRequest(AtmosphereResource resource) throws IOException {
+	public void onRequest(AtmosphereResource resource) throws IOException {
 
-        ConcurrentMap<String, UserData> loggedUserMap = getLoggedUsersMap();
 
-        String userName = StringPool.BLANK;
-        String userImagePath = StringPool.BLANK;
-        String userId = StringPool.BLANK;
-        
-        // user joined
-        String sessionId = resource.session().getId();
-        if (loggedUserMap.get(sessionId) == null) {
+		String userName = StringPool.BLANK;
+		String userImagePath = StringPool.BLANK;
+		String userId = StringPool.BLANK;
 
-            try {
+		// user joined
+		String sessionId = resource.session().getId();
+		String sheetId = extractBroadCastId(resource);
+		
+		ConcurrentMap<String, UserData> loggedUserMap = getLoggedUsersMap(sheetId);
+		
+		if (loggedUserMap.get(sessionId) == null) {
 
-                String baseImagePath = URLDecoder.decode(
-                        resource.getRequest().getParameter(SpreadSheetHandlerUtil.BASE_IMAGEPATH), ENCODING);
-                LOG.debug("base image path " + baseImagePath);
+			try {
 
-                User user = PortalUtil.getUser(resource.getRequest());
-                long companyId = PortalUtil.getCompanyId(resource.getRequest());
+				String baseImagePath = URLDecoder.decode(resource.getRequest()
+						.getParameter(SpreadSheetHandlerUtil.BASE_IMAGEPATH),
+						ENCODING);
+				
+				LOG.debug("base image path " + baseImagePath + " sheet id "
+						+ resource.getBroadcaster());
+				
 
-                if (user == null || user.isDefaultUser()) {
-                    LOG.debug("This is guest user");
-                    user = UserLocalServiceUtil.getDefaultUser(companyId);
-                    userName = LanguageUtil.get(LocaleUtil.getDefault(), SpreadSheetHandlerUtil.GUEST_USER_NAME_LABEL);
-                } else {
-                    userName = user.getFullName();
-                }
+				User user = PortalUtil.getUser(resource.getRequest());
+				long companyId = PortalUtil.getCompanyId(resource.getRequest());
 
-                userImagePath = UserConstants.getPortraitURL(baseImagePath, user.isMale(), user.getPortraitId());
-                userId = String.valueOf(user.getUserId());
-                LOG.debug(String.format("User full name: %s, User image path: %s", userName, userImagePath));
-            } catch (Exception e) {
-                LOG.error(e.getMessage());
-            }
+				if (user == null || user.isDefaultUser()) {
+					LOG.debug("This is guest user");
+					user = UserLocalServiceUtil.getDefaultUser(companyId);
+					userName = LanguageUtil.get(LocaleUtil.getDefault(),
+							SpreadSheetHandlerUtil.GUEST_USER_NAME_LABEL);
+				} else {
+					userName = user.getFullName();
+				}
 
-            loggedUserMap.put(resource.session().getId(), new UserData(userName, userImagePath, userId));
+				userImagePath = UserConstants.getPortraitURL(baseImagePath,
+						user.isMale(), user.getPortraitId());
+				userId = String.valueOf(user.getUserId());
+				LOG.debug(String.format(
+						"User full name: %s, User image path: %s", userName,
+						userImagePath));
+			} catch (Exception e) {
+				LOG.error(e.getMessage());
+			}
 
-            /* listens to disconnection event */
-            resource.addEventListener(new SpreadSheetResourceEventListener(loggedUserMap, sessionId));
-        }
-    }
-	
+			loggedUserMap.put(resource.session().getId(), new UserData(
+					userName, userImagePath, userId));
+
+			/* listens to disconnection event */
+			resource.addEventListener(new SpreadSheetResourceEventListener(
+					loggedUserMap, sessionId));
+		}
+	}
+
 	@Override
-    public void onStateChange(AtmosphereResourceEvent event) throws IOException {
+	public void onStateChange(AtmosphereResourceEvent event) throws IOException {
 
-        ConcurrentMap<String, UserData> loggedUserMap = getLoggedUsersMap();
-       // ConcurrentMap<String, JSONObject> whiteBoardDump = getWhiteBoardDump();
+		
+		String sheetId = extractBroadCastId(event.getResource());
+		
+		/*if(sheetId == null){
+			sheetId = "";
+		}*/
+		
+		ConcurrentMap<String, UserData> loggedUserMap = getLoggedUsersMap(sheetId);
+		// ConcurrentMap<String, JSONObject> whiteBoardDump =
+		// getWhiteBoardDump();
 
-        /* messages broadcasting */
-        if (event.isSuspended()) {
-            String message = event.getMessage() == null ? StringPool.BLANK : event.getMessage().toString();
+		/* messages broadcasting */
+		if (event.isSuspended()) {
+			String message = event.getMessage() == null ? StringPool.BLANK
+					: event.getMessage().toString();
 
-            if (!message.equals(StringPool.BLANK)) {
+			if (!message.equals(StringPool.BLANK)) {
 
-                try {
-                    JSONObject jsonMessage = JSONFactoryUtil.createJSONObject(message);
-                    /* verify if user is signing in */
-                    if (SpreadSheetHandlerUtil.LOGIN.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
-                        JSONObject usersLoggedMessage = SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap);
-                        //event.getResource().getBroadcaster().broadcast(usersLoggedMessage);
-                        event.getResource().write(usersLoggedMessage.toString());
-                    } else if (SpreadSheetHandlerUtil.CELL_HIGHLIGHTED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
-                        /* just broadcast the message */
-//                        LOG.debug("Broadcasting = " + message);
-                        event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
-                    } else if (SpreadSheetHandlerUtil.CELL_VALUE_UPDATED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
-                        /* just broadcast the message */
-//                      LOG.debug("Broadcasting = " + message);
-                    	event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
-                    } else if (SpreadSheetHandlerUtil.ROW_ADDED.equals(jsonMessage.getString(SpreadSheetHandlerUtil.ACTION))) {
-                        /* just broadcast the message */
-//                      LOG.debug("Broadcasting = " + message);
-                    	event.getResource().write(SpreadSheetHandlerUtil.generateCommands(jsonMessage).toString());
-                    } else {
-                    	event.getResource().write(jsonMessage.toString());
-                    }
-					
-                } catch (JSONException e) {
-                    LOG.debug("JSON parse failed");
-                }
-            }
-        }
-    }
+				try {
+					JSONObject jsonMessage = JSONFactoryUtil
+							.createJSONObject(message);
+					/* verify if user is signing in */
+					if (SpreadSheetHandlerUtil.LOGIN.equals(jsonMessage
+							.getString(SpreadSheetHandlerUtil.ACTION))) {
+						JSONObject usersLoggedMessage = SpreadSheetHandlerUtil
+								.generateLoggedUsersJSON(loggedUserMap);
+						// event.getResource().getBroadcaster().broadcast(usersLoggedMessage);
+						event.getResource()
+								.write(usersLoggedMessage.toString());
+					} else if (SpreadSheetHandlerUtil.CELL_HIGHLIGHTED
+							.equals(jsonMessage
+									.getString(SpreadSheetHandlerUtil.ACTION))) { // may be we can remove this as below code is funcioning same.
+						/* just broadcast the message */
+						// LOG.debug("Broadcasting = " + message);
+						event.getResource().write(
+								SpreadSheetHandlerUtil.generateCommands(
+										jsonMessage).toString());
+					} else if (SpreadSheetHandlerUtil.CELL_VALUE_UPDATED
+							.equals(jsonMessage
+									.getString(SpreadSheetHandlerUtil.ACTION))) { // may be we can remove this as below code is funcioning same.
+						/* just broadcast the message */
+						// LOG.debug("Broadcasting = " + message);
+						event.getResource().write(
+								SpreadSheetHandlerUtil.generateCommands(
+										jsonMessage).toString());
+					} else if (SpreadSheetHandlerUtil.ROW_ADDED
+							.equals(jsonMessage
+									.getString(SpreadSheetHandlerUtil.ACTION))) {
+						/* just broadcast the message */
+						// LOG.debug("Broadcasting = " + message);
+						event.getResource().write(
+								SpreadSheetHandlerUtil.generateCommands(
+										jsonMessage).toString());
+					} else {
+						event.getResource().write(jsonMessage.toString());
+					}
+
+				} catch (JSONException e) {
+					LOG.debug("JSON parse failed");
+				}
+			}
+		}
+	}
 }

@@ -14,6 +14,7 @@ public class SpreadSheetHandlerUtil {
 	public static final String SESSIONID = "sessionId";
 	public static final String GUEST_USER_NAME_LABEL = "rivetlogic.spreadsheet.guest.name.label";
 	public static final String LOGGED_USERS_MAP_KEY = "rivetlogic.spreadsheet.logged.users.map";
+	public static final String SHEET_MAP_KEY = "rivetlogic.spreadsheet.sheet.map";
 	
 	/* ACTIONS */
     public static final String LOGIN = "login";

@@ -3,7 +3,7 @@
   <description>Collaborative SpreadSheet Portlet</description>
   <display-name>Collaborative SpreadSheet Portlet</display-name>
   <servlet>
-    <servlet-name>CollaborativeSpreadSheet</servlet-name>
+    <servlet-name>collaborative-spreadsheet</servlet-name>
     <servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
     <init-param>
       <param-name>servlet-class</param-name>

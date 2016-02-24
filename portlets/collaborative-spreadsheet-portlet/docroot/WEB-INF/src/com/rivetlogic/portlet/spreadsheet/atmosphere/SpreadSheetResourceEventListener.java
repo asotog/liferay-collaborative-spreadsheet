@@ -68,4 +68,9 @@ public class SpreadSheetResourceEventListener implements AtmosphereResourceEvent
 		
 	}
 
+	public void onHeartbeat(AtmosphereResourceEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
