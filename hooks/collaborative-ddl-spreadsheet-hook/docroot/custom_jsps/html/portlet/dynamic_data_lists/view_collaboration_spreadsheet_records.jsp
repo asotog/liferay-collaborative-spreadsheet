@@ -47,6 +47,7 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 </script>
 <div class="lfr-spreadsheet-container">
 	<div id="<portlet:namespace />spreadsheet" class="realtime-spreadsheet">
+	<input type="hidden" id="record_set_id" value="<%= recordSet.getRecordSetId() %>">
 		<div class="collaboration-users">
 		</div>
 		<div class="table-striped yui3-widget yui3-datatable" id="<portlet:namespace />dataTable">

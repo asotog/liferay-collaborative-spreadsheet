@@ -99,10 +99,17 @@ AUI.add(
                     */
                     bindAtmosphere: function() {
                         var instance = this;
+                        
+                        var sheet = A.one('#record_set_id');
+                        var sheetId = null;
+                        if(sheet){
+                        	sheetId = sheet.get('value');
+                        }
+                        
                         var baseUrl = document.location.toString().split('/').slice(0, 3).join('/'); // gets only protocol, domain and port from current url
                         var request = {
-                            url: baseUrl + '/delegate/collaborative-spreadsheet/?baseImagePath=' +
-                                encodeURIComponent(Liferay.ThemeDisplay.getPathImage()),
+                            url: baseUrl + '/delegate/collaborative-spreadsheet/'+sheetId+'?baseImagePath=' +
+                                encodeURIComponent(Liferay.ThemeDisplay.getPathImage())+'&sheetId='+sheetId,
                             trackMessageLength: true,
                             transport: 'websocket'
                             //logLevel: 'debug'
