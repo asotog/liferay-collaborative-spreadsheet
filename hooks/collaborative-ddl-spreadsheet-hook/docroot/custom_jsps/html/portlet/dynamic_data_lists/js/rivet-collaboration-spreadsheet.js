@@ -112,7 +112,6 @@ AUI.add(
                                 encodeURIComponent(Liferay.ThemeDisplay.getPathImage())+'&sheetId='+sheetId,
                             trackMessageLength: true,
                             transport: 'websocket'
-                            //logLevel: 'debug'
                         };
 
                         request.onMessage = function (response) {
@@ -126,6 +125,10 @@ AUI.add(
                         };
                         
                         request.onClose = function (response) {};
+
+                        atmosphere.util.on(window, "beforeunload", function (event) {
+                            atmosphere.unsubscribe();
+                        });
 
                         instance.ws = atmosphere.subscribe(request);
                     },
