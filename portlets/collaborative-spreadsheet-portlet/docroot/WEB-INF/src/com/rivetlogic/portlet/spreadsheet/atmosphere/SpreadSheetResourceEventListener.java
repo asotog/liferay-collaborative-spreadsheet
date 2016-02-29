@@ -1,15 +1,19 @@
 package com.rivetlogic.portlet.spreadsheet.atmosphere;
 
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.rivetlogic.portlet.spreadsheet.atmosphere.model.UserData;
+
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResourceEventListener;
 
-import com.liferay.portal.kernel.json.JSONObject;
-import com.rivetlogic.portlet.spreadsheet.atmosphere.model.UserData;
-
 public class SpreadSheetResourceEventListener implements AtmosphereResourceEventListener {
+	private static final Log LOG = LogFactoryUtil
+			.getLog(SpreadSheetResourceEventListener.class);
 	/**
      * List of logged users.
      */
@@ -27,41 +31,41 @@ public class SpreadSheetResourceEventListener implements AtmosphereResourceEvent
 	
 	@Override
 	public void onBroadcast(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//LOG.info("braoadcasted "+ arg0);
 	}
 
 	@Override
 	public void onClose(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//LOG.info("onClose "+ arg0);
 	}
 
 	@Override
 	public void onDisconnect(AtmosphereResourceEvent event) {
-		/* removes user from map and broadcast users list again also with the unlogged user */
+		/* removes user from map and broadcast users list again */
 		UserData unloggedUser = this.loggedUserMap.get(sessionId);
 		this.loggedUserMap.remove(sessionId);
 		JSONObject users = SpreadSheetHandlerUtil.generateLoggedAndUnloggedUsersJSON(loggedUserMap, unloggedUser);
+		//LOG.debug("onMessage "+ users);
+		//LOG.debug("onDisconnect "+ event);
         event.getResource().getBroadcaster().broadcast(users);
 
 	}
 
 	@Override
 	public void onPreSuspend(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
+		//LOG.info("onPreSuspend "+ arg0);
 		
 	}
 
 	@Override
 	public void onResume(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
+		//LOG.info("onResume "+ arg0);
 		
 	}
 
 	@Override
 	public void onSuspend(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
+		//LOG.info("onSuspend "+ arg0);
 		
 	}
 
@@ -72,7 +76,7 @@ public class SpreadSheetResourceEventListener implements AtmosphereResourceEvent
 	}
 
 	public void onHeartbeat(AtmosphereResourceEvent arg0) {
-		// TODO Auto-generated method stub
+		//LOG.info("onHeartbeat "+ arg0);
 		
 	}
 

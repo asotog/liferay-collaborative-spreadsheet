@@ -216,5 +216,16 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 				}
 			}
 		}
+
+		/*This approach is getting triggered more times for a single action*/
+		/*if (event.isCancelled() || event.isClosedByClient() || event.isClosedByApplication() || event.isResumedOnTimeout()) {
+			// We didn't get notified, so we remove the user.
+			String sessionId = event.getResource().session().getId();
+			UserData unloggedUser = loggedUserMap.get(sessionId);
+			loggedUserMap.remove(sessionId);
+			JSONObject users = SpreadSheetHandlerUtil.generateLoggedAndUnloggedUsersJSON(loggedUserMap, unloggedUser);
+	        	event.getResource().getBroadcaster().broadcast(users); 
+			LOG.debug("Browser "+event.getResource().session().getId()+" unexpectedly disconnected");
+		}*/
 	}
 }
