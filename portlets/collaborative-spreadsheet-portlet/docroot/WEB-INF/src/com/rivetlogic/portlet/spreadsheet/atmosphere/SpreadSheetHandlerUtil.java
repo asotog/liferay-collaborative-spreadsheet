@@ -87,16 +87,16 @@ public class SpreadSheetHandlerUtil {
     	JSONObject usersJSON = SpreadSheetHandlerUtil.generateLoggedUsersJSON(loggedUserMap);
     	JSONObject usersUpdateCommand = usersJSON.getJSONArray(COMMANDS).getJSONObject(0);
     	
-	if(unloggedUserData != null){
-	    	JSONObject unloggedUser = JSONFactoryUtil.createJSONObject();
-		LOG.debug(unloggedUser);
-		unloggedUser.put(USERNAME, unloggedUserData.getUserName());
-		unloggedUser.put(USER_IMAGEPATH, unloggedUserData.getUserImagePath());
-		unloggedUser.put(USER_ID, unloggedUserData.getUserId());
-		unloggedUser.put(SESSIONID, "");
-	    	
-		usersUpdateCommand.put(UNLOGGED_USER, unloggedUser);
-	}
+    	if(unloggedUserData != null){ // as this has been updated to avoid NPE
+    	JSONObject unloggedUser = JSONFactoryUtil.createJSONObject();
+        LOG.debug(unloggedUser);
+        unloggedUser.put(USERNAME, unloggedUserData.getUserName());
+        unloggedUser.put(USER_IMAGEPATH, unloggedUserData.getUserImagePath());
+        unloggedUser.put(USER_ID, unloggedUserData.getUserId());
+        unloggedUser.put(SESSIONID, "");
+    	
+        usersUpdateCommand.put(UNLOGGED_USER, unloggedUser);
+    	}
         
     	return usersJSON;
     }

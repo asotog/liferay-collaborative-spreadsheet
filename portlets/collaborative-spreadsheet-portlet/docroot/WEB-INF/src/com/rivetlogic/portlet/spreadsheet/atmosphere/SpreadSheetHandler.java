@@ -146,8 +146,8 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 					userName, userImagePath, userId));
 
 			/* listens to disconnection event */
-			//resource.addEventListener(new SpreadSheetResourceEventListener(
-			//		loggedUserMap, sessionId));
+			resource.addEventListener(new SpreadSheetResourceEventListener(
+					loggedUserMap, sessionId));
 		}
 	}
 
@@ -217,7 +217,8 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 			}
 		}
 
-		if (event.isCancelled() || event.isClosedByClient() || event.isClosedByApplication() || event.isResumedOnTimeout()) {
+		/*This approach is getting triggered more times for a single action*/
+		/*if (event.isCancelled() || event.isClosedByClient() || event.isClosedByApplication() || event.isResumedOnTimeout()) {
 			// We didn't get notified, so we remove the user.
 			String sessionId = event.getResource().session().getId();
 			UserData unloggedUser = loggedUserMap.get(sessionId);
@@ -225,6 +226,6 @@ public class SpreadSheetHandler extends AtmosphereHandlerAdapter {
 			JSONObject users = SpreadSheetHandlerUtil.generateLoggedAndUnloggedUsersJSON(loggedUserMap, unloggedUser);
 	        	event.getResource().getBroadcaster().broadcast(users); 
 			LOG.debug("Browser "+event.getResource().session().getId()+" unexpectedly disconnected");
-		}
+		}*/
 	}
 }
