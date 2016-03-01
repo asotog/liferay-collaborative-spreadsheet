@@ -129,6 +129,9 @@ AUI.add(
                         atmosphere.util.on(window, "beforeunload", function (event) {
                             atmosphere.unsubscribe();
                         });
+ 			atmosphere.util.on(window, "unload", function (event) {
+                            atmosphere.unsubscribe();
+                        });
 
                         instance.ws = atmosphere.subscribe(request);
                     },
