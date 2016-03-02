@@ -6,7 +6,7 @@
 !/build.daemon.properties
 /dist/
 build/
-/lib/
+/lib/*
 !/lib/ant-contrib.jar
 !/lib/antelopetasks.jar
 !/lib/bcpg-jdk16.jar
