@@ -33,6 +33,9 @@ if (DDLRecordSetPermission.contains(permissionChecker, recordSet.getRecordSetId(
 
 DDMStructure ddmStructure = recordSet.getDDMStructure();
 %>
+<style type="text/css">
+@import url("/html/portlet/dynamic_data_lists/css/rivet-main.css?t=1457040877");
+</style>
 <script id="spreadsheet-online-users" type="text/x-handlebars-template">
 	<ul class="unstyled">
 		{{#each users}}
