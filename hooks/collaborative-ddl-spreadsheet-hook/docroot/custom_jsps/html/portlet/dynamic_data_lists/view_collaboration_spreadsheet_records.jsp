@@ -33,8 +33,11 @@ if (DDLRecordSetPermission.contains(permissionChecker, recordSet.getRecordSetId(
 
 DDMStructure ddmStructure = recordSet.getDDMStructure();
 %>
+<% 
+int rivetts = 1457040877;
+%>
 <style type="text/css">
-@import url("/html/portlet/dynamic_data_lists/css/rivet-main.css?t=1457040877");
+@import url("/html/portlet/dynamic_data_lists/css/rivet-main.css?t=<%= rivetts %>");
 </style>
 <script id="spreadsheet-online-users" type="text/x-handlebars-template">
 	<ul class="unstyled">
@@ -79,19 +82,19 @@ DDMStructure ddmStructure = recordSet.getDDMStructure();
 	YUI({
 		modules:  {
            'rivet-spreadsheet-datatable': {
-               fullpath: '/html/portlet/dynamic_data_lists/js/rivet-spreadsheet-datatable.js'
+               fullpath: '/html/portlet/dynamic_data_lists/js/rivet-spreadsheet-datatable.js?t=<%= rivetts %>'
            },
 		   'rivet-collaboration-spreadsheet': {
-			   fullpath: '/html/portlet/dynamic_data_lists/js/rivet-collaboration-spreadsheet.js'
+			   fullpath: '/html/portlet/dynamic_data_lists/js/rivet-collaboration-spreadsheet.js?t=<%= rivetts %>'
 		   },
 		   'rivet-inline-cell': {
-			  fullpath: '/html/portlet/dynamic_data_lists/js/rivet-inline-cell.js'
+			  fullpath: '/html/portlet/dynamic_data_lists/js/rivet-inline-cell.js?t=<%= rivetts %>'
 		   },
 		   'rivet-users-color': {
-			  fullpath: '/html/portlet/dynamic_data_lists/js/rivet-users-color.js'
+			  fullpath: '/html/portlet/dynamic_data_lists/js/rivet-users-color.js?t=<%= rivetts %>'
 		   },
 		   'atmosphere': {
-			  fullpath: '/html/portlet/dynamic_data_lists/js/third-party/atmosphere.js'
+			  fullpath: '/html/portlet/dynamic_data_lists/js/third-party/atmosphere.js?t=<%= rivetts %>'
 		   }
        }
 	}).use('rivet-collaboration-spreadsheet', function(A) {
