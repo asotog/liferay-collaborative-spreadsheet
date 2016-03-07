@@ -81,14 +81,11 @@ AUI.add(
                             action:  RivetCollaborationSpreadSheet.CONSTANTS.CELL_VALUE_UPDATED,
                             userId: Liferay.ThemeDisplay.getUserId(),
                             value: e.value,
+                            rawValue: e.rawValue,
                             record: e.record,
                             column: e.col    
                         };
-                        // if cell value event contains rawValue means that cell editor
-                        // is not the custom inline cell editor from rivetlogic
-                        if (e.rawValue) { 
-                            data.rawValue = e.rawValue;
-                        }
+
                         this.ws.push(A.JSON.stringify(data));
                     },
 
@@ -238,14 +235,12 @@ AUI.add(
                         var cell = this.getCellFromRecord(data);
                         Liferay.RivetInlineCellEditor.setCellValue(cell, data.value);
                         this.onCellHighlightMessage(data);
-                        // if raw value means cell is liferay core provided non rivet logic customized
-                        if (typeof data.rawValue != 'undefined') {
-                            var column = this.getColumn(cell);
-                            var record = this.getRecord(cell);
-                            // set the local model and avoid fire event, to prevent
-                            // looping to the same event listeners
-                            record.set(column.key, data.rawValue, {silent: true});
-                        }
+                        // with raw value, the model is updated
+                        var column = this.getColumn(cell);
+                        var record = this.getRecord(cell);
+                        // set the local model and avoid fire event, to prevent
+                        // looping to the same event listeners
+                        record.set(column.key, data.rawValue, {silent: true});
                     },
                      
                     /*

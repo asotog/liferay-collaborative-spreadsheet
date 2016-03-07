@@ -70,6 +70,7 @@ AUI.add(
                             instance.set('value', this.get('value'));
                             var data = tbl.table.getCellData(tbl.activeCell);
                             data.value = this.get('value');
+                            data.rawValue = this.get('value');
                             tbl.table.fire('cellValueUpdated', data);
                         }
                     });

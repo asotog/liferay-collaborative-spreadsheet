@@ -105,7 +105,7 @@ AUI.add(
                         var value = Liferay.RivetInlineCellEditor.getCellValue(instance.get('activeCell'));
                         var data = instance.getCellData(instance.get('activeCell'));
                         data.value = value;
-                        data.rawValue = record.get(column.key)[0];
+                        data.rawValue = record.get(column.key);
                         instance.fire('cellValueUpdated', data);
                     }, 100);
                 }, 
