@@ -34,7 +34,7 @@ if (DDLRecordSetPermission.contains(permissionChecker, recordSet.getRecordSetId(
 DDMStructure ddmStructure = recordSet.getDDMStructure();
 %>
 <% 
-int rivetts = 1457040878;
+int rivetts = 1457364222;
 %>
 <style type="text/css">
 @import url("/html/portlet/dynamic_data_lists/css/rivet-main.css?t=<%= rivetts %>");
